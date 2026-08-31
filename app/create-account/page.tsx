@@ -7,14 +7,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { useAuth } from "@/contexts/auth-context";
+
 export default function CreateAccountPage() {
   const [error, setError] = useState("");
+  const { register } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirm-password") as string;
 
@@ -23,8 +27,17 @@ export default function CreateAccountPage() {
       return;
     }
 
-    // Continue with account creation (e.g., API call)
-    alert("Account created successfully!");
+    try {
+      await register({
+        email,
+        passwordHash: password, // As per api docs, this sends passwordHash
+        name: email.split('@')[0], // Providing a default name based on email for testing
+        role: "user", // Providing a default role
+      });
+      alert("Account created successfully!");
+    } catch (err) {
+      setError("Failed to create account. Please try again.");
+    }
   };
 
   return (
