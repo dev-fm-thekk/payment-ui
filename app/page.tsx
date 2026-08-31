@@ -1,7 +1,18 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <></>
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-4">
+      <h1 className="text-4xl font-bold">Welcome</h1>
+      <div className="flex gap-4">
+        <Button>
+          <Link href="/login">Login</Link>
+        </Button>
+        <Button variant="outline">
+          <Link href="/dashboard">Dashboard</Link>
+        </Button>
+      </div>
+    </main>
   );
 }
