@@ -10,5 +10,13 @@ export const companyService = {
     const response = await apiClient.get('/company');
     // Ensure we return an array whether the API wraps it in a data object or not
     return Array.isArray(response.data) ? response.data : (response.data?.data || []);
-  }
+  },
+
+  createCompany: async (name: string): Promise<Company> => {
+    const params = new URLSearchParams({ name });
+    const response = await apiClient.post('/company', params.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    return response.data?.data ?? response.data;
+  },
 };

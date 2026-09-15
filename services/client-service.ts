@@ -22,4 +22,13 @@ export const clientService = {
       serviceId: client.service_id || client.serviceId,
     }));
   },
+
+  create: async (name: string, email: string, serviceId: string): Promise<Client> => {
+    const params = new URLSearchParams({ name, email, service_id: serviceId });
+    const response = await apiClient.post('/client', params.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    return response.data?.data ?? response.data;
+  },
 };
+

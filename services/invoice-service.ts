@@ -18,4 +18,11 @@ export const invoiceService = {
     const response = await apiClient.get(`/invoice/client/${clientId}`);
     return Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
   },
+  create: async (data: Omit<Invoice, 'id' | 'status'> & { status?: string }): Promise<Invoice> => {
+    const response = await apiClient.post('/invoice', data);
+    return response.data?.data ?? response.data;
+  },
+  notify: async (id: string): Promise<void> => {
+    await apiClient.post(`/invoice/notify/${id}`);
+  },
 };

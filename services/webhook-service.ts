@@ -27,4 +27,13 @@ export const webhookService = {
     const response = await apiClient.get(`/webhook/event/logs/${webhookId}`);
     return Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
   },
+
+  create: async (companyId: string, provider: string): Promise<WebhookEndpoint> => {
+    const params = new URLSearchParams({ companyId, provider });
+    const response = await apiClient.post('/webhook', params.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    return response.data?.data ?? response.data;
+  },
 };
+
