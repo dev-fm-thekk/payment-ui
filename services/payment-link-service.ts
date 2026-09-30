@@ -7,6 +7,9 @@ export interface PaymentLink {
   url: string;
   status: 'active' | 'expired' | 'consumed';
   expiresAt: string;
+  amount?: number;
+  currency?: string;
+  description?: string;
   [key: string]: unknown;
 }
 
@@ -16,14 +19,18 @@ export const paymentLinkService = {
     return Array.isArray(response.data) ? response.data : (response.data?.data ?? []);
   },
 
-  create: async (
-    companyId: string,
-    provider: string,
-    url: string,
-    expiresAt: string,
-  ): Promise<PaymentLink> => {
-    const response = await apiClient.post('/payment-link', { companyId, provider, url, expiresAt });
-    return response.data?.data ?? response.data;
+  create: async (payload: {
+    amount: number;
+    currency: string;
+    provider?: string;
+    providerId?: string;
+    company?: string;
+    companyId?: string;
+    upi_link?: boolean;
+    description?: string;
+  }): Promise<PaymentLink> => {
+    const response = await apiClient.post('/payment-link', payload);
+    return response.data?.data ?? response.data.record;
   },
 };
 

@@ -42,7 +42,6 @@ const navItems = [
   { label: "Overview",      href: "",               icon: LayoutDashboardIcon },
   { label: "Services",      href: "/services",      icon: CreditCardIcon },
   { label: "Clients",       href: "/clients",       icon: UsersIcon },
-  { label: "Payment Links", href: "/payment-links", icon: LinkIcon },
   { label: "Webhooks",      href: "/webhooks",      icon: PlugIcon },
   { label: "Connect",       href: "/connect",       icon: Building2Icon },
 ];

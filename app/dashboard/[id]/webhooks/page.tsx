@@ -37,10 +37,10 @@ const columns = (orgId: string) => [
     key: "logs",
     label: "Logs",
     render: (r: WebhookEndpoint) => (
-      <Button variant="ghost" size="sm">
-        <Link href={`/dashboard/${orgId}/webhooks/logs?webhookId=${r.id}`}>
-          <FileTextIcon className="size-4 mr-1" />
-          View Logs
+      <Button variant="link" size="sm">
+        <Link href={`/dashboard/${orgId}/webhooks/logs?webhookId=${r.id}`} className="flex items-center justify-between">
+          <FileTextIcon className="size-5 mr-1" />
+          <span>View Logs</span>
         </Link>
       </Button>
     ),
@@ -55,7 +55,7 @@ export default function WebhooksPage() {
 
   // Dialog state
   const [open, setOpen] = useState(false);
-  const [provider, setProvider] = useState("");
+  const [provider, setProvider] = useState<string | null>("");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -64,6 +64,7 @@ export default function WebhooksPage() {
     Promise.allSettled(
       PROVIDERS.map((p) => webhookService.getByCompanyAndProvider(orgId, p))
     ).then((results) => {
+      console.log(results);
       const merged = results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
       setData(merged);
     }).catch(() => setError("Failed to load webhooks."))
@@ -103,7 +104,7 @@ export default function WebhooksPage() {
         </div>
 
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               New Webhook

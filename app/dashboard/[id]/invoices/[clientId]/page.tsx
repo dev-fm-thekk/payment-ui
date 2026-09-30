@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { invoiceService, Invoice } from "@/services/invoice-service";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon, PlusIcon, BellIcon } from "lucide-react";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const STATUS_STYLES: Record<string, string> = {
   draft:   "bg-muted text-muted-foreground",
@@ -25,10 +22,7 @@ export default function ClientInvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({ title: "", description: "", amount: "", currency: "INR", dueDate: "" });
-  const [creating, setCreating] = useState(false);
+  const [notifyingId, setNotifyingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadInvoices();
@@ -42,32 +36,16 @@ export default function ClientInvoicesPage() {
       .finally(() => setLoading(false));
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setCreating(true);
-    try {
-      await invoiceService.create({
-        ...formData,
-        clientId,
-        dueDate: new Date(formData.dueDate).toISOString()
-      });
-      setIsDialogOpen(false);
-      loadInvoices();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create invoice.");
-    } finally {
-      setCreating(false);
-    }
-  };
-
   const handleNotify = async (id: string) => {
+    setNotifyingId(id);
     try {
       await invoiceService.notify(id);
       alert("Invoice notification sent successfully!");
     } catch (err) {
       console.error(err);
       alert("Failed to send notification.");
+    } finally {
+      setNotifyingId(null);
     }
   };
 
@@ -82,9 +60,13 @@ export default function ClientInvoicesPage() {
     )},
     { key: "dueDate", label: "Due Date", render: (r: Invoice) => new Date(r.dueDate).toLocaleDateString() },
     { key: "actions", label: "Actions",  render: (r: Invoice) => (
-      <Button variant="outline" size="sm" onClick={() => handleNotify(r.id)}>
-        <BellIcon className="size-4 mr-1" />
-        Notify
+      <Button variant="outline" size="sm" disabled={notifyingId === r.id} onClick={() => handleNotify(r.id)}>
+        {notifyingId === r.id ? (
+          <span className="animate-spin size-4 mr-1 border-2 border-current border-t-transparent rounded-full" />
+        ) : (
+          <BellIcon className="size-4 mr-1" />
+        )}
+        {notifyingId === r.id ? "Notifying..." : "Notify"}
       </Button>
     )}
   ];
@@ -92,10 +74,10 @@ export default function ClientInvoicesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/dashboard/${companyId}/clients`}>
-            <ArrowLeftIcon className="size-4 mr-1" />
-            Clients
+        <Button variant="link" size="lg">
+          <Link href={`/dashboard/${companyId}/clients`} className="flex justify-between items-center">
+            <ArrowLeftIcon className="size-5 mr-1" />
+            <p>Clients</p>
           </Link>
         </Button>
       </div>
@@ -103,56 +85,17 @@ export default function ClientInvoicesPage() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold tracking-tight">Invoices</h1>
-          <p className="text-muted-foreground text-sm font-mono text-xs">
+          <p className="text-muted-foreground text-sm font-mono">
             Client: {clientId}
           </p>
         </div>
         
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <PlusIcon className="size-4 mr-2" />
-              Create Invoice
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <form onSubmit={handleCreate}>
-              <DialogHeader>
-                <DialogTitle>Create Invoice</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input id="title" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Input id="description" required value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="amount">Amount</Label>
-                    <Input id="amount" type="number" required value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="currency">Currency</Label>
-                    <Input id="currency" required value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })} />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="dueDate">Due Date</Label>
-                  <Input id="dueDate" type="datetime-local" required value={formData.dueDate} onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })} />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button type="submit" disabled={creating}>{creating ? "Creating..." : "Create"}</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button>
+          <Link href={`/dashboard/${companyId}/invoices/${clientId}/new`} className="flex items-center">
+            <PlusIcon className="size-4 mr-2" />
+            Create Invoice
+          </Link>
+        </Button>
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}

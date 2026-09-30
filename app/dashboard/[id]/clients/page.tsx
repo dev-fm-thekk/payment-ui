@@ -120,10 +120,10 @@ export default function ClientsPage() {
       key: "actions",
       label: "",
       render: (r: Client) => (
-        <Button variant="ghost" size="sm">
-          <Link href={`/dashboard/${companyId}/invoices/${r.id}`}>
-            <FileTextIcon className="size-4 mr-1" />
-            View Invoices
+        <Button variant="link" size="lg">
+          <Link href={`/dashboard/${companyId}/invoices/${r.id}`} className="flex justify-between items-center">
+            <FileTextIcon className="size-5 mr-1" />
+            <span>View Invoices</span>
           </Link>
         </Button>
       ),
@@ -139,11 +139,9 @@ export default function ClientsPage() {
         </div>
 
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger>
-            <Button disabled={services.length === 0}>
-              <Plus className="mr-2 h-4 w-4" />
-              New Client
-            </Button>
+          <DialogTrigger className="flex gap-2 items-centers justify-center border bg-black text-white rounded-md px-3 py-2">
+              <Plus />
+              <p>New Client</p>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

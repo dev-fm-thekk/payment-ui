@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const apiClient = axios.create({
-  baseURL: 'https://payment-saas.onrender.com/api/v1', // Assuming the API is proxied or hosted at this base path
+  baseURL: 'https://payment-saas-1.onrender.com/api/v1', // Assuming the API is proxied or hosted at this base path
   headers: {
     'Content-Type': 'application/json',
   },

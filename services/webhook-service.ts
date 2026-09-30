@@ -10,10 +10,22 @@ export interface WebhookEndpoint {
 
 export interface WebhookEventLog {
   id: string;
-  webhookId: string;
+  webhookId?: string;
+  webhookEndpointId?: string;
   eventType?: string;
+  amount?: number;
+  currency?: string;
   status?: string;
   createdAt?: string;
+  receivedAt?: string;
+  payload?: {
+    event?: string;
+    amount?: number;
+    currency?: string;
+    timestamp?: number;
+    status?: string;
+    [key: string]: unknown;
+  };
   [key: string]: unknown;
 }
 

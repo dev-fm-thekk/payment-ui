@@ -105,11 +105,9 @@ export default function DashboardPage() {
 
           {/* Create Organisation dialog */}
           <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-            <DialogTrigger asChild>
-              <Button>
+            <DialogTrigger>
                 <Plus className="mr-2 h-4 w-4" />
                 New Organisation
-              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>

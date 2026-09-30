@@ -79,11 +79,9 @@ export default function ServicesPage() {
         </div>
 
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Service
-            </Button>
+           <DialogTrigger className="flex gap-2 items-centers justify-center border bg-black text-white rounded-md px-3 py-2">
+              <Plus />
+              <p>New Service</p>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
